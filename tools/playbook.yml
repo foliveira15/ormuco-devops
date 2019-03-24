@@ -1,0 +1,134 @@
+---
+- hosts: webservers
+  user: ubuntu
+  become: yes
+  vars:
+    - homeDir: /var/www/ndxbrands.com/html
+    - repo: ormuco-devops
+    - gitAccount: foliveira15
+    - emailSSL: foliveira15@me.com
+
+  tasks:
+    - name: Defines paths for releases
+      set_fact:
+        release_path: "{{ homeDir }}/releases/{{ lookup('pipe','date +%Y%m%d%H%M%S') }}"
+        current_path: "{{ homeDir }}/current"
+
+    - name: Get release folder
+      command: readlink -f current
+      register: current_release_path
+      ignore_errors: yes
+      args:
+        chdir: "{{ homeDir }}"
+
+    - name: New folder for release
+      file:
+        dest: "{{ release_path }}"
+        mode: 0755
+        recurse: yes
+        state: directory
+
+    - name: Adding repository for certbot
+      apt_repository:
+        repo: 'ppa:certbot/certbot'
+
+    - name: Packages Install
+      apt: 
+        name: '{{ packages }}'
+        update_cache: yes
+        state: latest
+      vars:
+        packages:
+        - build-essential
+        - nodejs
+        - npm
+        - nginx
+        - python-certbot-nginx
+
+    - name: Creating Nginx webdirectory
+      file:
+        path: /var/www/ndxbrands.com/html
+        state: directory
+        mode: 0755
+
+    - name: Copy Nginx configutarion file for ndxbrands.com
+      copy:
+        src: ndxbrands.com
+        dest: /etc/nginx/sites-available/ndxbrands.com
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Creating link for sites-enable
+      file:
+        src: /etc/nginx/sites-available/ndxbrands.com
+        dest: /etc/nginx/sites-enabled/ndxbrands.com
+        state: link
+      
+    - name: Setting up ufw rules for nginx
+      shell: ufw allow 'Nginx Full'
+
+    - name: Setting up ufw rules for OpenSSH
+      shell: ufw allow 'OpenSSH'
+
+    - name: Enabling ufw
+      shell: ufw --force enable
+
+    #- name: Obtaining SSL Certificate
+    #  shell: "certbot -n --nginx --redirect --agree-tos -m {{ emailSSL }} -d ndxbrands.com -d ormuco.ndxbrands.com"
+    #  ignore_errors: yes
+    #  notify: restart nginx
+
+    - name: Get Source From GITHUB
+      git:
+        repo: "https://github.com/{{ gitAccount }}/{{ repo }}.git"
+        dest: "{{ release_path }}"
+        update: yes
+        force: yes
+      
+    - name: Install Application
+      npm:
+        path: "{{ release_path }}"
+        production: yes
+
+    - name: Update link
+      file:
+        src: "{{ release_path }}"
+        dest: "{{ current_path }}"
+        state: link
+
+    - name: Setting permissions to DB folder
+      command: chown ubuntu:ubuntu {{ current_path}}/db
+
+    - name: Setting permissions to DB file
+      command: chown ubuntu:ubuntu {{ current_path}}/db/ormuco_devops.db
+
+    - name: Stop app
+      command: pm2 delete ormuco-app
+      ignore_errors: yes
+         
+    - name: Stop pm2 service
+      command: pm2 kill
+      ignore_errors: yes
+
+    - name: Install/Upgrade pm2 package
+      npm:
+        name: pm2
+        global: yes
+        state: present
+        version: '2.10.4'
+  
+    - name: Start APP
+      shell: pm2 start {{ current_path }}/server.js --name ormuco-app -i max
+      
+    - name: Setting pm2 service
+      command: pm2 startup
+
+    - name: Saving pm2
+      command: pm2 save
+
+  handlers:
+   - name: restart nginx
+     service:
+       name=nginx
+       state=restarted

@@ -1,0 +1,89 @@
+body{
+    background-color: #fff;
+    color: #482093;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 300;
+    font-size: "desktop:18px";
+    line-height: 1.5em;
+    margin: 0;
+}
+
+.container{
+    width: 70%;
+    margin: auto;
+
+}
+
+.container input{
+    padding: 0px;
+    width: 50%;
+    height: 23px;
+    color: #482093
+}
+
+.container select{
+    margin-top: 2px;
+    width: 51%;
+    height: 25px;
+    color: #482093
+    
+}
+
+.button{
+    margin-top: 5px;
+    background-color: #482093;
+    color: #fff;
+    border: none;
+    height: 30px;
+}
+
+.header{
+    background-color: rgb(72,32,147);
+    height: 70px;
+    color: #fff;
+    margin: auto;
+    text-align: center;
+    font-size: 36px;
+    line-height: 70px;
+    
+}
+
+.line{
+    display: inline-block;
+    width: 100%;
+}
+
+.label{
+    background-color: #9070CE;
+    color: #fff;
+    height: 30px;
+    line-height: 30px;
+    text-align: right;
+    display: block;
+    border-right: 2px #afafaf solid;
+    border-left: 2px #afafaf solid;
+    border-top: 2px #afafaf solid;
+    border-bottom: 2px #afafaf solid;
+    border-width: 2px;
+    padding: 3px;
+    margin: auto;
+    width: 30%;
+    float: left;
+}
+
+.field{
+    background-color: #482093;
+    color: #fff;
+    height: 30px;
+    line-height: 30px;
+    text-align: left;
+    display: block;
+    border-right: 2px #afafaf solid;
+    border-top: 2px #afafaf solid;
+    border-bottom: 2px #afafaf solid;
+    border-width: 2px;
+    padding: 3px;
+    margin: auto;
+    float: left;
+    width: 67%;
+}

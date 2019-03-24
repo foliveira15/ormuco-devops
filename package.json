@@ -1,0 +1,25 @@
+{
+  "name": "ormuco-devops",
+  "version": "1.0.0",
+  "description": "Sample Application for Ormuco",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Fernando Oliveira <foliveira15@me.com>",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "sqlite3": "^4.0.6"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/foliveira15/ormuco-devops.git"
+  },
+  "bugs": {
+    "url": "https://github.com/foliveira15/ormuco-devops/issues"
+  },
+  "homepage": "https://github.com/foliveira15/ormuco-devops#readme"
+}

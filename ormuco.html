@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Ormuco DevOps</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css">
+<script src="static/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(() => {
+  $('#readButton').click(() => {
+    const requestURL = '/preferences/' + $('#nameBox').val();
+    console.log('making ajax request to:', requestURL);
+
+    $.ajax({
+      url: requestURL,
+      type: 'GET',
+      dataType : 'json', 
+      success: (data) => {
+        console.log('You received some data!', data);
+        if (data.color && data.animal) {
+          $('#search-result').html('');
+          $('#colorDiv').html(data.name + ' preferred color is ' + data.color + ' and loves ' + data.animal + '!');
+          $('#animalImage').attr('src', '/static/' + data.animal +'.jpg').attr('width', '300px');
+        } else {
+          $('#search-result').html('Name not found. Please try again.');
+          $('#colorDiv').html('');
+          $('#animalImage').attr('src', '').attr('width', '0px');
+        }
+      },
+    });
+  });
+
+  $('#allUsersButton').click(() => {
+    $.ajax({
+      url: '/preferences/',
+      type: 'GET',
+      dataType : 'json',
+      success: (data) => {
+        console.log('You received some data!', data);
+        var allNames = "";
+        function tabResult(i, index){
+          allNames = allNames + '<br>' + data[index];
+        };
+        data.forEach(tabResult);
+        $('#colorDiv').html('');
+        $('#animalImage').attr('src', '').attr('width', '0px');
+        $('#search-result').html('Names: ' + allNames);
+        console.log(allNames);        
+      },
+    });
+  });
+
+  $('#insertButton').click(() => {
+    if($('#insertNameBox').val() != '' && $('#insertColorBox').val() != ''){
+    $.ajax({
+      url: '/',
+      type: 'POST',
+      data: {
+              name: $('#insertNameBox').val(),
+              color: $('#insertColorBox').val(),
+              animal: $('#insertAnimalBox').val()
+            },
+      success: (data) => {
+        $('#status').html(data.message);
+      }
+    });
+  }else{
+    $('#status').html('Please make sure to fill both Name and Color!');
+  }
+  });
+
+  $(document).ajaxError(() => {
+    $('#status').html('Error: unknown ajaxError!');
+  });
+});
+</script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Welcome to Ormuco DevOps Test!</div>
+    <h2>Please, fill the form with your preferences:</h2>
+    <div id="status"></div>
+      <div class="label"><label>Name:</label></div><div class="field"><input id="insertNameBox" type="text" size="20" placeholder="Enter your name"/>*Required</div>
+      <div class="label"><label>Favorite Color:</label></div><div class="field"><input id="insertColorBox" type="text" size="20" placeholder="Enter your favorite color"/>*Required</p></div>
+      <div class="label"><label>Cats or Dogs:</label></div><div class="field"><select id="insertAnimalBox"/>
+        <option value="cats">Cats</option>
+        <option value="dogs">Dogs</option>
+      </select></div>
+      <div><button class="button" id="insertButton">Save Preferences</button></div>
+    <br>
+    <div><h2>Check all the preferences saved:</h2></div>
+    <div id="form-search">
+      <div><label>Name:</label> <input id="nameBox" type="text" size="20"/></div>
+      <div><p><button class="button" id="readButton">Show User</button> <button class="button" id="allUsersButton">Show All</button></p></div>
+      <div id="colorDiv"></div>
+      <img id="animalImage"></img>
+      <div id="search-result"></div>
+    </div>
+  </div>
+</body>
+</html>
