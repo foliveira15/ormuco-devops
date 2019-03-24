@@ -74,10 +74,10 @@
     - name: Enabling ufw
       shell: ufw --force enable
 
-    #- name: Obtaining SSL Certificate
-    #  shell: "certbot -n --nginx --redirect --agree-tos -m {{ emailSSL }} -d ndxbrands.com -d ormuco.ndxbrands.com"
-    #  ignore_errors: yes
-    #  notify: restart nginx
+    - name: Obtaining SSL Certificate
+      shell: "certbot -n --nginx --redirect --agree-tos -m {{ emailSSL }} -d ndxbrands.com -d ormuco.ndxbrands.com"
+      ignore_errors: yes
+      notify: restart nginx
 
     - name: Get Source From GITHUB
       git:
